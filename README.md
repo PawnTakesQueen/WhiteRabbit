@@ -7,7 +7,7 @@ White Rabbit is created by Violet (http://pariahvi.com) and is licensed under a 
 Console-based time management program
 
 ####Dependencies
-* Python (<= 3.0)
+* Python (>= 3.0)
 
 ####Installation
 To install, open a terminal and `cd` to the root directory of this program, then enter the command:
