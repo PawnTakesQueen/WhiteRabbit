@@ -1,0 +1,165 @@
+#!/usr/bin/env python3
+
+import datetime
+import math
+import sys
+import threading
+import time
+
+
+class WhiteRabbit:
+
+    def __init__(self):
+        self.quit = 0
+        self.start = 0
+        self.add_time = 0
+        self.start_time = 0
+        self.total_time = 0
+        self.output_file = 'white-rabbit.log'
+        self.options = {
+            'HELP': 'Shows options',
+            'QUIT': 'Quits program',
+            'START': 'Starts timer if not started',
+            'STOP': 'Stops timer if stopped',
+            'TIME': 'Show time spent for day, month, year and total time'
+            }
+        if len(sys.argv) == 3:
+            if sys.argv[1] == '-o' or sys.argv[1] == '--output':
+                self.output_file = sys.argv[2]
+        self.output = open(self.output_file, 'a+')
+        start_stop_thread = threading.Thread(target=self.start_stop)
+        start_stop_thread.daemon = True
+        start_stop_thread.start()
+        self.start_timer()
+
+    def start_stop(self):
+        while 1:
+            self.start_stop_input()
+            if self.action.lower() == 'start':
+                self.start = 1
+            elif self.action.lower() == 'stop':
+                self.start = 0
+            elif self.action.lower() == 'help':
+                print()
+                for option in sorted(self.options):
+                    print(option + ' - ' + self.options[option])
+                print()
+            elif self.action.lower() == 'time':
+                self.output_total_time()
+            elif self.action.lower() == 'quit':
+                self.quit = 1
+                break
+
+    def start_timer(self):
+        while 1:
+            while self.start:
+                if self.quit == 1:
+                    break
+                self.output = open(self.output_file, 'r+')
+                self.loglines = self.output.readlines()
+                if self.start_time == 0:
+                    self.start_time = time.time()
+                    if len(self.loglines) > 0:
+                        if self.loglines[-1][:10] == str(
+                                datetime.date.today()):
+                            self.add_time = self.get_add_time(
+                                self.loglines[-1])
+                self.cur_time = time.time()
+                cur_date = str(datetime.date.today())
+                if len(self.loglines) > 0:
+                    self.total_time = (self.cur_time - self.start_time +
+                                       self.add_time)
+                    if self.loglines[-1][:10] == cur_date:
+                        self.output.close()
+                        self.output = open(self.output_file, 'w')
+                        if len(self.loglines) > 1:
+                            self.output.writelines(
+                                [item for item in self.loglines[:-1]])
+                        else:
+                            self.output.writelines([''])
+                        self.output.close()
+                        self.output = open(self.output_file, 'a+')
+                        self.output.write(self.total_time_stamp(
+                            cur_date, self.total_time))
+                    else:
+                        self.start_time = 0
+                        self.total_time = 0
+                        self.output.write(self.total_time_stamp(
+                            cur_date, self.total_time))
+                else:
+                    self.start_time = 0
+                    self.total_time = 0
+                    self.output.write(self.total_time_stamp(
+                        cur_date, self.total_time))
+                self.add_time == 0
+                self.output.close()
+                time.sleep(.5)
+            if self.quit == 1:
+                break
+            self.start_time = 0
+            time.sleep(.5)
+        sys.exit(0)
+
+    def start_stop_input(self):
+        if self.start == 0:
+            self.action = input('Type START, TIME, HELP or QUIT: ')
+        else:
+            self.action = input('Type STOP, TIME, HELP or QUIT: ')
+
+    def get_add_time(self, line_input):
+        cur_date_line = line_input.split()
+        return(int(cur_date_line[-2]) + int(cur_date_line[-4]) * 60 + int(
+            cur_date_line[-6]) * 3600)
+
+    def total_time_stamp(self, word, time):
+        time = int(time)
+        hours = time / 3600
+        minutes = (time % 3600) / 60
+        seconds = time % 60
+        H = 'Hour'
+        M = 'Minute'
+        S = 'Second'
+        if hours != 1:
+            H += 's'
+        if minutes != 1:
+            M += 's'
+        if seconds != 1:
+            S += 's'
+        return(word + ': ' + str(int(hours)) + ' ' + H + ', ' +
+            str(int(minutes)) + ' ' + M + ', ' + str(seconds) + ' ' + S + '\n')
+
+    def output_total_time(self):
+        today = []
+        month = []
+        year = []
+        for x in range(3):
+            output = open(self.output_file, 'r+')
+            lines = output.readlines()
+            time = 0
+            today_time = 0
+            month_time = 0
+            year_time = 0
+            if len(lines) > 0:
+                date = str(datetime.date.today())
+                for line in lines:
+                    line_time = self.get_add_time(line)
+                    time += line_time
+                    if line[:4] == date[:4]:
+                        year_time += line_time
+                        if line[5:7] == date[5:7]:
+                            month_time += line_time
+                if lines[-1][:10] == str(datetime.date.today()):
+                    today_time = self.get_add_time(lines[-1])
+            today.append(today_time)
+            month.append(month_time)
+            year.append(year_time)
+        today_time = max(today)
+        month_time = max(month)
+        year_time = max(year)
+        print('\n' + self.total_time_stamp('Today', today_time)[:-1])
+        print(self.total_time_stamp('This Month', month_time)[:-1])
+        print(self.total_time_stamp('This Year', year_time)[:-1])
+        print(self.total_time_stamp('Total Time', time))
+
+if __name__ == '__main__':
+    WhiteRabbit()
