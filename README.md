@@ -1,8 +1,7 @@
 White Rabbit
 ============
-######v2.0.0
 
-White Rabbit is created by Violet (http://pariahvi.com) and is licensed under a BSD License. Read LICENSE for more license text.
+White Rabbit is created by PariahVi (http://pariahvi.com) and is licensed under a BSD License. Read LICENSE.txt for more license text.
 
 Console-based time management program
 
