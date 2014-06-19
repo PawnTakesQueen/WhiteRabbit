@@ -4,7 +4,8 @@ from distutils.core import setup
 if sys.version_info < (3, 0, 0):
     print('White Rabbit requires Python 3')
 
-version = '1.0.3.0= 'white-rabbit'
+version = '1.0.3.0
+mainscript = 'white-rabbit'
 
 setup(
     name='White Rabbit',
