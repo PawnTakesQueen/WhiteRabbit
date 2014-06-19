@@ -10,10 +10,10 @@ mainscript = 'white-rabbit'
 setup(
     name='White Rabbit',
     description='Console-based time management program',
-    author='Violet (PariahVi)',
-    author_email='violet@pariahvi.com',
+    author='PariahVi (http://pariahvi.com)',
+    author_email='vi@pariahvi.com',
     license='BSD',
     version=version,
-    url='https://bitbucket.org/PariahVi/white-rabbit',
+    url='https://github.com/PariahVi/white-rabbit',
     scripts=[mainscript]
     )
